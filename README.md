@@ -11,3 +11,12 @@ JWT_SECRET=mySecretKey
 {
     "presets": ["@babel/preset-env"]
 }   
+
+- chạy pnpm i joi + npm i bcryptjs trước khi chạy dev
+
+- ae để ý phần middleware gồm:
++ requireRole để phân quyền cho người dùng, đã viết sẵn hàm:
+router nào ae muốn phần quyền chỉ việc thêm requireRole("role người đó") (xem tham khảo ở router/user.js)
++ authenticate để xác thực xem đăng nhập chưa thì với được dùng các chức năng cần token
+cái này cho all vào router các chức năng ae code đc ( xem tham khảo ở router/user.js)
+
