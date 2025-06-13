@@ -34,6 +34,18 @@ const userSchema = new mongoose.Schema({
             default: true,
             select: true,
         },
+  studentId: {
+    type: String,
+    trim: true,
+    required: function() { return this.role === 'Student'; },
+    unique: function() { return this.role === 'Student'; },
+    sparse: true,
+  },
+  className: {
+    type: String,
+    trim: true,
+    required: function() { return this.role === 'Student'; },
+  },
 }, {
   timestamps: true 
 });

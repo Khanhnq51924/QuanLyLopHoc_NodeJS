@@ -1,0 +1,148 @@
+{
+    "info": {
+      "name": "Student API",
+      "_postman_id": "student-api-collection",
+      "description": "Test API quản lý sinh viên",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Tạo sinh viên (Admin)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token_admin}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Nguyễn Văn A\",\n  \"studentId\": \"B21DCCN001\",\n  \"className\": \"D21CQCN01\",\n  \"email\": \"vana@example.com\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/students",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["students"]
+          }
+        }
+      },
+      {
+        "name": "Lấy danh sách sinh viên",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token_admin}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:3000/students",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["students"]
+          }
+        }
+      },
+      {
+        "name": "Lấy chi tiết sinh viên",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token_admin}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:3000/students/:id",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["students", ":id"]
+          }
+        }
+      },
+      {
+        "name": "Cập nhật sinh viên",
+        "request": {
+          "method": "PATCH",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token_admin}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Nguyễn Văn B\",\n  \"className\": \"D21CQCN02\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/students/:id",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["students", ":id"]
+          }
+        }
+      },
+      {
+        "name": "Xóa sinh viên",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token_admin}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:3000/students/:id",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["students", ":id"]
+          }
+        }
+      },
+      {
+        "name": "Lấy sinh viên theo lớp",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token_admin}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:3000/students/class/D21CQCN01",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["students", "class", "D21CQCN01"]
+          }
+        }
+      }
+    ]
+  }
