@@ -34,6 +34,12 @@ const studentSchema = new mongoose.Schema({
     default: true,
     select: true,
   },
+  daXoa: {
+  type: Boolean,
+  default: false,
+  select: false,
+},
+
 }, {
   timestamps: true
 });

@@ -12,39 +12,41 @@ import {
   getSubmissionsByAssignment,
   gradeSubmission,
   getAssignmentStatus,
-  addComment
+  addComment,
+  restoreSubmission
 } from '../controllers/submission';
+import { checkXoa } from '../middleware/checkXoa';
 
-const router = express.Router();
+const routerSubmission = express.Router();
 
 // Tạo bài nộp mới (hoc sinh)
-router.post('/', authenticate, requireRole('Student'), validateRequest(submissionSchema), createSubmission);
+routerSubmission.post('/', authenticate, requireRole('Student'), validateRequest(submissionSchema), createSubmission);
 
 // Lấy danh sách bài nộp (admin/giao vien/hoc sinh)
-router.get('/', authenticate, requireRole('Admin', 'Teacher', 'Student'), getAllSubmissions);
+routerSubmission.get('/', authenticate, requireRole('Admin', 'Teacher', 'Student'),checkXoa, getAllSubmissions);
 
 // Lấy chi tiết bài nộp (admin/giao vien/hoc sinh)
-router.get('/:id', authenticate, requireRole('Admin', 'Teacher', 'Student'), getSubmissionDetail);
+routerSubmission.get('/:id', authenticate, requireRole('Admin', 'Teacher', 'Student'),checkXoa, getSubmissionDetail);
 
 // Cập nhật bài nộp (admin/giao vien/hoc sinh)
-router.patch('/:id', authenticate, requireRole('Admin', 'Teacher', 'Student'), validateRequest(submissionUpdateSchema), updateSubmission);
+routerSubmission.patch('/:id', authenticate, requireRole('Admin', 'Teacher', 'Student'),checkXoa, validateRequest(submissionUpdateSchema), updateSubmission);
 
 // Đánh giá bài nộp (giao vien)
-router.post('/:id/grade', authenticate, requireRole('Teacher'), validateRequest(gradeSubmissionSchema), gradeSubmission);
+routerSubmission.post('/:id/grade', authenticate, requireRole('Teacher'),checkXoa, validateRequest(gradeSubmissionSchema), gradeSubmission);
 
 // Thêm comment cho bài nộp (giao vien)
-router.post('/:id/comment', authenticate, requireRole('Teacher'), validateRequest(commentSchema), addComment);
+routerSubmission.post('/:id/comment', authenticate, requireRole('Teacher'),checkXoa, validateRequest(commentSchema), addComment);
 
 // Xóa bài nộp (admin/giao vienn)
-router.delete('/:id', authenticate, requireRole('Admin', 'Teacher'), deleteSubmission);
+routerSubmission.delete('/:id', authenticate, requireRole('Admin', 'Teacher'),checkXoa, deleteSubmission);
 
 // Lấy bài nộp theo sinh viên (admin/giao vien/hoc sinh)
-router.get('/student/:studentId', authenticate, requireRole('Admin', 'Teacher', 'Student'), getSubmissionsByStudent);
+routerSubmission.get('/student/:studentId', authenticate, requireRole('Admin', 'Teacher', 'Student'),checkXoa, getSubmissionsByStudent);
 
 // Lấy bài nộp theo bài tập (admin/giao vien)
-router.get('/assignment/:assignmentId', authenticate, requireRole('Admin', 'Teacher'), getSubmissionsByAssignment);
+routerSubmission.get('/assignment/:assignmentId', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getSubmissionsByAssignment);
 
 // Lấy trạng thái bài nộp của tất cả sinh viên cho một bài tập (admin/giao vien)
-router.get('/assignment/:assignmentId/status', authenticate, requireRole('Admin', 'Teacher'), getAssignmentStatus);
-
-export default router; 
+routerSubmission.get('/assignment/:assignmentId/status', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getAssignmentStatus);
+routerSubmission.patch('/:id/restore', authenticate, requireRole('Admin', 'Teacher'), checkXoa, restoreSubmission);
+export default routerSubmission; 

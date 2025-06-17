@@ -10,20 +10,20 @@ import {
   deleteStudent,
   getStudentsByClass
 } from '../controllers/student';
-
-const router = express.Router();
+import { checkXoa } from '../middleware/checkXoa';
+const routerStudent = express.Router();
 
 // Admin tạo sinh viên
-router.post('/', authenticate, requireRole('Admin'), validateRequest(studentRegisterSchema), createStudent);
+routerStudent.post('/', authenticate, requireRole('Admin'), validateRequest(studentRegisterSchema), createStudent);
 // Lấy danh sách sinh viên (Admin, Teacher)
-router.get('/', authenticate, requireRole('Admin', 'Teacher'), getAllStudents);
+routerStudent.get('/', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getAllStudents);
 // Lấy chi tiết sinh viên (Admin, Teacher)
-router.get('/:id', authenticate, requireRole('Admin', 'Teacher'), getStudentDetail);
+routerStudent.get('/:id', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getStudentDetail);
 // Admin cập nhật sinh viên
-router.patch('/:id', authenticate, requireRole('Admin'), validateRequest(studentUpdateSchema), updateStudent);
+routerStudent.patch('/:id', authenticate, requireRole('Admin'), validateRequest(studentUpdateSchema), updateStudent);
 // Admin xóa sinh viên
-router.delete('/:id', authenticate, requireRole('Admin'), deleteStudent);
+routerStudent.delete('/:id', authenticate, requireRole('Admin'), deleteStudent);
 // Lấy sinh viên theo lớp (Admin, Teacher)
-router.get('/class/:className', authenticate, requireRole('Admin', 'Teacher'), getStudentsByClass);
+routerStudent.get('/class/:className', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getStudentsByClass);
 
-export default router; 
+export default routerStudent; 

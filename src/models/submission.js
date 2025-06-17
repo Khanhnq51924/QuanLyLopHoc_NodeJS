@@ -58,6 +58,11 @@ const submissionSchema = new mongoose.Schema({
       ref: 'User',
       required: true
     },
+    daXoa: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
     createdAt: {
       type: Date,
       default: Date.now

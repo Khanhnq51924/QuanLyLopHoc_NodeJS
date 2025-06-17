@@ -10,7 +10,8 @@ export const createSubmission = async (req, res) => {
       assignmentId,
       content,
       fileUrl,
-      status: 'pending'
+      status: 'pending',
+      daXoa: false
     });
     return res.status(201).json({ message: 'Tạo bài nộp thành công', submission });
   } catch (error) {
@@ -18,15 +19,17 @@ export const createSubmission = async (req, res) => {
   }
 };
 
-// Lấy danh sách bài nộp (admin/giao vien xem tất cả, hoc sinh chỉ xem bài của mình)
+// Lấy danh sách bài nộp (lọc daXoa)
 export const getAllSubmissions = async (req, res) => {
   try {
     const { role, _id } = req.user;
-    let filter = {};
+    let filter = { daXoa: false };
     if (role === 'Student') {
       filter.studentId = _id;
     }
-    const submissions = await Submission.find(filter).populate('studentId', 'name studentId').populate('assignmentId', 'title');
+    const submissions = await Submission.find(filter)
+      .populate('studentId', 'name studentId')
+      .populate('assignmentId', 'title');
     return res.status(200).json({ submissions });
   } catch (error) {
     return res.status(500).json({ message: 'Lấy danh sách bài nộp thất bại', error: error.message });
@@ -38,11 +41,13 @@ export const getSubmissionDetail = async (req, res) => {
   try {
     const { id } = req.params;
     const { role, _id } = req.user;
-    let filter = { _id: id };
+    let filter = { _id: id, daXoa: false };
     if (role === 'Student') {
       filter.studentId = _id;
     }
-    const submission = await Submission.findOne(filter).populate('studentId', 'name studentId').populate('assignmentId', 'title');
+    const submission = await Submission.findOne(filter)
+      .populate('studentId', 'name studentId')
+      .populate('assignmentId', 'title');
     if (!submission) return res.status(404).json({ message: 'Không tìm thấy bài nộp' });
     return res.status(200).json({ submission });
   } catch (error) {
@@ -50,7 +55,7 @@ export const getSubmissionDetail = async (req, res) => {
   }
 };
 
-// Cập nhật bài nộp (admin/giao vien có thể cập nhật status và feedback)
+// Cập nhật bài nộp
 export const updateSubmission = async (req, res) => {
   try {
     const { id } = req.params;
@@ -63,7 +68,7 @@ export const updateSubmission = async (req, res) => {
       updateData = { status, feedback };
     }
     const submission = await Submission.findOneAndUpdate(
-      { _id: id, ...(role === 'Student' ? { studentId: _id } : {}) },
+      { _id: id, daXoa: false, ...(role === 'Student' ? { studentId: _id } : {}) },
       updateData,
       { new: true, runValidators: true }
     );
@@ -74,15 +79,46 @@ export const updateSubmission = async (req, res) => {
   }
 };
 
-// Xóa bài nộp (admin/giao vien)
+// Xóa mềm bài nộp
 export const deleteSubmission = async (req, res) => {
   try {
     const { id } = req.params;
-    const submission = await Submission.findByIdAndDelete(id);
+    const submission = await Submission.findByIdAndUpdate(
+      id,
+      { daXoa: true },
+      { new: true }
+    );
     if (!submission) return res.status(404).json({ message: 'Không tìm thấy bài nộp' });
-    return res.status(200).json({ message: 'Xóa bài nộp thành công' });
+    return res.status(200).json({ message: 'Đã xóa mềm bài nộp thành công' });
   } catch (error) {
     return res.status(500).json({ message: 'Xóa bài nộp thất bại', error: error.message });
+  }
+};
+
+// Khôi phục bài nộp đã xóa mềm
+export const restoreSubmission = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const submission = await Submission.findByIdAndUpdate(
+      id,
+      { daXoa: false },
+      { new: true }
+    );
+
+    if (!submission) {
+      return res.status(404).json({ message: 'Không tìm thấy bài nộp để khôi phục' });
+    }
+
+    return res.status(200).json({
+      message: 'Khôi phục bài nộp thành công',
+      submission
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Khôi phục bài nộp thất bại',
+      error: error.message
+    });
   }
 };
 
@@ -94,7 +130,7 @@ export const getSubmissionsByStudent = async (req, res) => {
     if (role === 'Student' && _id.toString() !== studentId) {
       return res.status(403).json({ message: 'Bạn không có quyền xem bài nộp của sinh viên khác' });
     }
-    const submissions = await Submission.find({ studentId }).populate('assignmentId', 'title');
+    const submissions = await Submission.find({ studentId, daXoa: false }).populate('assignmentId', 'title');
     return res.status(200).json({ submissions });
   } catch (error) {
     return res.status(500).json({ message: 'Lấy bài nộp theo sinh viên thất bại', error: error.message });
@@ -105,22 +141,22 @@ export const getSubmissionsByStudent = async (req, res) => {
 export const getSubmissionsByAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const submissions = await Submission.find({ assignmentId }).populate('studentId', 'name studentId');
+    const submissions = await Submission.find({ assignmentId, daXoa: false }).populate('studentId', 'name studentId');
     return res.status(200).json({ submissions });
   } catch (error) {
     return res.status(500).json({ message: 'Lấy bài nộp theo bài tập thất bại', error: error.message });
   }
 };
 
-// Đánh giá bài nộp (giao vien)
+// Đánh giá bài nộp
 export const gradeSubmission = async (req, res) => {
   try {
     const { id } = req.params;
     const { score, status, feedback, detailedFeedback } = req.body;
     const teacherId = req.user._id;
 
-    const submission = await Submission.findByIdAndUpdate(
-      id,
+    const submission = await Submission.findOneAndUpdate(
+      { _id: id, daXoa: false },
       {
         score,
         status,
@@ -130,7 +166,8 @@ export const gradeSubmission = async (req, res) => {
         gradedAt: new Date()
       },
       { new: true, runValidators: true }
-    ).populate('studentId', 'name studentId').populate('assignmentId', 'title');
+    ).populate('studentId', 'name studentId')
+     .populate('assignmentId', 'title');
 
     if (!submission) {
       return res.status(404).json({ message: 'Không tìm thấy bài nộp' });
@@ -152,22 +189,15 @@ export const gradeSubmission = async (req, res) => {
 export const getAssignmentStatus = async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const { role, _id } = req.user;
-
-    // Lấy tất cả sinh viên
     const students = await Student.find({});
-    
-    // Lấy tất cả bài nộp của bài tập này
-    const submissions = await Submission.find({ assignmentId })
+    const submissions = await Submission.find({ assignmentId, daXoa: false })
       .populate('studentId', 'name studentId')
       .populate('gradedBy', 'name');
 
-    // tao map để dễ dàng tìm bài nộp theo studentId
     const submissionMap = new Map(
       submissions.map(sub => [sub.studentId._id.toString(), sub])
     );
 
-    // taoj danh sách kết quả
     const result = students.map(student => {
       const submission = submissionMap.get(student._id.toString());
       return {
@@ -205,15 +235,15 @@ export const getAssignmentStatus = async (req, res) => {
   }
 };
 
-// Thêm comment cho bài nộp (giao vien)
+// Thêm comment
 export const addComment = async (req, res) => {
   try {
     const { id } = req.params;
     const { comment } = req.body;
     const teacherId = req.user._id;
 
-    const submission = await Submission.findByIdAndUpdate(
-      id,
+    const submission = await Submission.findOneAndUpdate(
+      { _id: id, daXoa: false },
       {
         $push: {
           comments: {
@@ -241,4 +271,4 @@ export const addComment = async (req, res) => {
       error: error.message
     });
   }
-}; 
+};
