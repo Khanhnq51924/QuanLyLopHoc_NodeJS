@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890",
+		"name": "QuanLyLopHoc",
+		"description": "Collection API cho hệ thống Quản Lý Lớp Học",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Submissions",
+			"item": [
+				{
+					"name": "Tạo bài nộp mới",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"assignmentId\": \"65f9b5c3c261e6001c3c1234\",\n    \"content\": \"Bài làm của em\",\n    \"fileUrl\": \"https://example.com/file.pdf\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submissions",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions"]
+						}
+					}
+				},
+				{
+					"name": "Lấy danh sách bài nộp",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/submissions",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions"]
+						}
+					}
+				},
+				{
+					"name": "Lấy chi tiết bài nộp",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/submissions/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "65f9b5c3c261e6001c3c1234"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Đánh giá bài nộp",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"score\": 8.5,\n    \"status\": \"approved\",\n    \"feedback\": \"Bài làm tốt\",\n    \"detailedFeedback\": \"Cần bổ sung thêm phần giải thích cho câu 2\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submissions/:id/grade",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions", ":id", "grade"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "65f9b5c3c261e6001c3c1234"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Thêm comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"Cần bổ sung thêm phần giải thích cho câu 2\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submissions/:id/comment",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions", ":id", "comment"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "65f9b5c3c261e6001c3c1234"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Xem trạng thái bài nộp",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/submissions/assignment/:assignmentId/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions", "assignment", ":assignmentId", "status"],
+							"variable": [
+								{
+									"key": "assignmentId",
+									"value": "65f9b5c3c261e6001c3c1234"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api"
+		},
+		{
+			"key": "token",
+			"value": "YOUR_TOKEN_HERE"
+		}
+	]
+} 
