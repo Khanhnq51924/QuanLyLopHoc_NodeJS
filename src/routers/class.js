@@ -1,18 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate } = require('../middleware/auth.middleware');
-const { authorizeRoles } = require('../middleware/role.middleware');
-const Class = require('../models/class');
+const classController = require('../controllers/class');
+const { verifyToken, isAdmin } = require('../middlewares/auth');
 
-router.post('/', authenticate, authorizeRoles('admin'), async (req, res) => {
-  const newClass = new Class(req.body);
-  await newClass.save();
-  res.json(newClass);
-});
-
-router.get('/', authenticate, async (req, res) => {
-  const classes = await Class.find().populate('teacher');
-  res.json(classes);
-});3
+router.post('/', verifyToken, isAdmin, classController.createClass);
+router.put('/:id/assign-teacher', verifyToken, isAdmin, classController.assignTeacher);
+router.get('/', verifyToken, classController.getAllClasses);
+router.put('/:id', verifyToken, isAdmin, classController.updateClass);
+router.delete('/:id', verifyToken, isAdmin, classController.deleteClass);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const Class = require('../models/class');
 
+// Tạo lớp học mới
 exports.createClass = async (req, res) => {
   try {
     const newClass = new Class(req.body);
@@ -10,6 +11,7 @@ exports.createClass = async (req, res) => {
   }
 };
 
+// Gán giáo viên cho lớp học
 exports.assignTeacher = async (req, res) => {
   try {
     const updatedClass = await Class.findByIdAndUpdate(
@@ -23,6 +25,7 @@ exports.assignTeacher = async (req, res) => {
   }
 };
 
+// Lấy danh sách tất cả lớp học
 exports.getAllClasses = async (req, res) => {
   try {
     const classes = await Class.find().populate('teacher', 'name email');
@@ -32,6 +35,7 @@ exports.getAllClasses = async (req, res) => {
   }
 };
 
+// Cập nhật thông tin lớp học
 exports.updateClass = async (req, res) => {
   try {
     const updated = await Class.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -41,10 +45,11 @@ exports.updateClass = async (req, res) => {
   }
 };
 
+// Xóa lớp học
 exports.deleteClass = async (req, res) => {
   try {
     await Class.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Class deleted' });
+    res.json({ message: 'Class deleted successfully' });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
