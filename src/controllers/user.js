@@ -79,7 +79,7 @@ export const dangNhap = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().select("-password");
+        const users = await User.find().select("-password +daXoa");
         return res.status(200).json({
             message: "Lấy danh sách người dùng thành công",
             users,
@@ -175,7 +175,7 @@ export const dangKyGiaoVien = async (req, res) => {
       avata,
       image,
       content,
-      role: undefined, // mặc định
+      role: "test", // mặc định
       status: "cho",
     });
 
@@ -195,7 +195,7 @@ export const dangKyGiaoVien = async (req, res) => {
 export const getDanhSachDangKyGV = async (req, res) => {
   try {
     const users = await User.find({ 
-        role: "Teacher",
+        role: "test",
       status: { $in: ["cho", "xac_nhan", "tu_choi"] }, 
       daXoa: { $ne: true }
     }).select("-password");
@@ -243,7 +243,7 @@ export const duyetDangKyGV = async (req, res) => {
     });
   }
 };
-export const khoiPhucTaiKhoanTuChoi = async (req, res) => {
+export const khoiPhucTaiKhoan = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -252,14 +252,11 @@ export const khoiPhucTaiKhoanTuChoi = async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
     }
 
-    if (user.status !== "tu_choi" || user.daXoa !== true) {
-      return res.status(400).json({ message: "Tài khoản này không ở trạng thái bị từ chối hoặc chưa bị xóa" });
+    if ( user.daXoa !== true) {
+      return res.status(400).json({ message: "Tài khoản này không ở trạng thái chưa bị xóa" });
     }
 
     user.daXoa = false;
-    user.status = "cho";
-    user.role = undefined;
-
     await user.save();
     return res.status(200).json({ message: "Khôi phục tài khoản thành công", user });
 

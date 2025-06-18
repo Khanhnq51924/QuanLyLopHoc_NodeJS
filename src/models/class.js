@@ -1,21 +1,22 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+
+const { Schema } = mongoose;
 
 const classSchema = new Schema({
   className: {
     type: String,
-    required: true
+    required: true,
   },
   teacher: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   daXoa: {
-  type: Boolean,
-  default: false,
-  select: false, // ẩn khi query nếu cần
-},
-
+    type: Boolean,
+    default: false,
+    select: false, // ẩn khi query nếu cần
+  },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Class', classSchema);
+const Class = mongoose.model('Class', classSchema);
+export default Class;

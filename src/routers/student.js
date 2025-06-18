@@ -8,14 +8,13 @@ import {
   getStudentDetail,
   updateStudent,
   deleteStudent,
-  getStudentsByClass
+  getStudentsByClass,
+  assignStudentToClass
 } from '../controllers/student';
 import { checkXoa } from '../middleware/checkXoa';
 const routerStudent = express.Router();
 
-// Admin tạo sinh viên
-routerStudent.post('/', authenticate, requireRole('Admin'), validateRequest(studentRegisterSchema), createStudent);
-// Lấy danh sách sinh viên (Admin, Teacher)
+routerStudent.put('/:studentId/assign-class', authenticate, requireRole('Admin'), assignStudentToClass);
 routerStudent.get('/', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getAllStudents);
 // Lấy chi tiết sinh viên (Admin, Teacher)
 routerStudent.get('/:id', authenticate, requireRole('Admin', 'Teacher'),checkXoa, getStudentDetail);

@@ -1,7 +1,7 @@
 import express from 'express';
 import { authenticate, requireRole } from '../middleware/requireRole';
 import { checkXoa } from '../middleware/checkXoa';
-import { createAssignment, getAllAssignments, getAssignmentDetail, restoreAssignment, softDeleteAssignment, updateAssignment } from '../controllers/assignment';
+import { createAssignment, getAllAssignments, getAssignmentDetail, getAssignmentsByClass, restoreAssignment, softDeleteAssignment, updateAssignment } from '../controllers/assignment';
 
 
 const routerASM = express.Router();
@@ -57,5 +57,7 @@ routerASM.patch(
   requireRole('Teacher', 'Admin'),
   restoreAssignment
 );
-
+routerASM.get('/:classId',authenticate,
+  checkXoa,
+  requireRole('Teacher', 'Admin', 'Student'), getAssignmentsByClass);
 export default routerASM;

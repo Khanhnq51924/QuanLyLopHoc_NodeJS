@@ -118,3 +118,26 @@ export const restoreAssignment = async (req, res) => {
     return res.status(500).json({ message: 'Khôi phục bài tập thất bại', error: error.message });
   }
 };
+
+// Lấy tất cả bài tập của một lớp học
+export const getAssignmentsByClass = async (req, res) => {
+  try {
+    const { classId } = req.params;
+
+    if (!classId) {
+      return res.status(400).json({ message: 'Thiếu classId trong yêu cầu' });
+    }
+
+    const assignments = await Assignment.find({ classId, daXoa: false })
+      .populate('createdBy', 'name email')
+      .sort({ deadline: 1 }); // Sắp xếp theo deadline tăng dần (nếu muốn)
+
+    return res.status(200).json({ assignments });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Lấy bài tập theo lớp học thất bại',
+      error: error.message,
+    });
+  }
+};
+
